@@ -2,7 +2,7 @@
 
 **AI for Predictive Protection & Dignified Adaptation**
 
-ClimaShield 2.0 is an AI-powered climate displacement risk prediction and adaptive micro-insurance platform built for a 24-hour hackathon. It leverages **AI for Water and Planet (AIWP)** open data to predict regional climate risks, calculate personalized insurance premiums, and deliver early warnings to vulnerable communities.
+ClimaShield is an AI-powered climate displacement risk prediction and adaptive micro-insurance platform. It leverages **AI for Water and Planet (AIWP)** open data to predict regional climate risks, calculate personalized insurance premiums, and deliver early warnings to vulnerable communities.
 
 ---
 
@@ -308,7 +308,7 @@ Each region has realistic climate features and coordinates for demonstration.
 
 ## 🏆 Hackathon Readiness
 
-This project is optimized for 24-hour hackathon demos:
+This project is optimized for hAIckathon demo:
 
 - ✅ **Modular code** - Easy to understand and modify
 - ✅ **Comprehensive docstrings** - Self-documenting
@@ -360,6 +360,6 @@ For questions or issues:
 
 **Built with ❤️ for Climate Resilience**
 
-🌍 ClimaShield 2.0 | November 2025 | 24-Hour Hackathon MVP
+🌍 ClimaShield | November 2025 | Andri Peti | Dea Peka
 
 </div>
