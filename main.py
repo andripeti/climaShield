@@ -73,6 +73,10 @@ def main():
         
         st.markdown("---")
         st.markdown("📅 November 2025")
+        st.markdown("Built with ❤️ for the hAickathon")
+        st.markdown("Andri Peti & Dea Peka")
+        st.markdown("📍 Tirana, Albania")
+        st.markdown("---")
     
     # Main content
     try:
