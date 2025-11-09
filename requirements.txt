@@ -1,0 +1,25 @@
+# ClimaShield 2.0 - Python Dependencies
+
+# Core Framework
+streamlit>=1.28.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+
+# Visualization
+plotly>=5.17.0
+folium>=0.14.0
+streamlit-folium>=0.15.0
+
+# AWS Data Access (optional - for real AIWP data)
+boto3>=1.28.0
+
+# AI Explainability (optional)
+shap>=0.42.0
+
+# Additional utilities
+requests>=2.31.0
