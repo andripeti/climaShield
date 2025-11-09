@@ -100,7 +100,7 @@ ClimaShield v2/
 
 1. **Clone or download the project**
    ```bash
-   cd "c:\Users\User\Desktop\Andri\ClimaShield v2"
+   cd "c:\ClimaShield" //wherever your project directory is
    ```
 
 2. **Create a virtual environment (recommended)**

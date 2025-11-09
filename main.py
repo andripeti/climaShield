@@ -110,7 +110,7 @@ def main():
         # Footer
         st.markdown("""
         <div style="text-align: center; padding: 2rem 0; color: #666;">
-            <p><strong>ClimaShield 2.0</strong> - Empowering Communities with AI-Driven Climate Resilience</p>
+            <p><strong>ClimaShield</strong> - Empowering Communities with AI-Driven Climate Resilience</p>
             <p>Built with ❤️ using Streamlit, scikit-learn, and AIWP Open Data</p>
         </div>
         """, unsafe_allow_html=True)
