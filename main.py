@@ -10,7 +10,7 @@ import data_model
 
 # Page configuration
 st.set_page_config(
-    page_title="ClimaShield 2.0",
+    page_title="ClimaShield",
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -53,8 +53,8 @@ def main():
     
     # Sidebar
     with st.sidebar:
-        st.image("https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/artificial-intelligence/artificial-intelligence.png", width=100)
-        st.title("ClimaShield 2.0")
+        st.image("https://cdn-icons-png.flaticon.com/512/5208/5208410.png", width=100)
+        st.title("ClimaShield")
         st.markdown("---")
         
         st.markdown("""
@@ -69,13 +69,7 @@ def main():
         ### Data Source
         **AI for Water and Planet (AIWP)**  
         Open satellite and sensor data for climate analysis.
-        
-        ### Technology Stack
-        - **ML Model:** Random Forest Regressor
-        - **Data:** AIWP Climate Dataset
-        - **Framework:** Streamlit + Python
-        - **Visualization:** Folium + Plotly
-        """)
+        """, unsafe_allow_html=True)
         
         st.markdown("---")
         st.markdown("📅 November 2025")
@@ -124,7 +118,6 @@ def main():
     except Exception as e:
         st.error(f"❌ Error initializing application: {e}")
         st.info("Please check your data connection and dependencies.")
-
 
 if __name__ == "__main__":
     main()

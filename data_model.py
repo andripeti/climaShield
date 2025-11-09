@@ -18,16 +18,29 @@ warnings.filterwarnings('ignore')
 # Sample regions with coordinates (for demonstration)
 # In production, this would come from the AIWP dataset
 SAMPLE_REGIONS = [
-    {"region": "Bangladesh - Dhaka", "lat": 23.8103, "lon": 90.4125, "country": "Bangladesh"},
-    {"region": "India - Mumbai", "lat": 19.0760, "lon": 72.8777, "country": "India"},
-    {"region": "Philippines - Manila", "lat": 14.5995, "lon": 120.9842, "country": "Philippines"},
-    {"region": "Pakistan - Karachi", "lat": 24.8607, "lon": 67.0011, "country": "Pakistan"},
-    {"region": "Indonesia - Jakarta", "lat": -6.2088, "lon": 106.8456, "country": "Indonesia"},
-    {"region": "Vietnam - Ho Chi Minh", "lat": 10.8231, "lon": 106.6297, "country": "Vietnam"},
-    {"region": "Kenya - Nairobi", "lat": -1.2921, "lon": 36.8219, "country": "Kenya"},
-    {"region": "Nigeria - Lagos", "lat": 6.5244, "lon": 3.3792, "country": "Nigeria"},
-    {"region": "Brazil - São Paulo", "lat": -23.5505, "lon": -46.6333, "country": "Brazil"},
-    {"region": "Mexico - Mexico City", "lat": 19.4326, "lon": -99.1332, "country": "Mexico"},
+    # High risk coastal regions (flood-prone)
+    {"region": "Bangladesh - Dhaka", "lat": 23.8103, "lon": 90.4125, "country": "Bangladesh", "risk_bias": "high"},
+    {"region": "Philippines - Manila", "lat": 14.5995, "lon": 120.9842, "country": "Philippines", "risk_bias": "high"},
+    {"region": "Indonesia - Jakarta", "lat": -6.2088, "lon": 106.8456, "country": "Indonesia", "risk_bias": "high"},
+    {"region": "Vietnam - Ho Chi Minh", "lat": 10.8231, "lon": 106.6297, "country": "Vietnam", "risk_bias": "high"},
+    
+    # Moderate risk regions
+    {"region": "India - Mumbai", "lat": 19.0760, "lon": 72.8777, "country": "India", "risk_bias": "moderate"},
+    {"region": "Pakistan - Karachi", "lat": 24.8607, "lon": 67.0011, "country": "Pakistan", "risk_bias": "moderate"},
+    {"region": "Kenya - Nairobi", "lat": -1.2921, "lon": 36.8219, "country": "Kenya", "risk_bias": "moderate"},
+    {"region": "Brazil - São Paulo", "lat": -23.5505, "lon": -46.6333, "country": "Brazil", "risk_bias": "moderate"},
+    
+    # Low risk regions (stable climate, better infrastructure)
+    {"region": "Norway - Oslo", "lat": 59.9139, "lon": 10.7522, "country": "Norway", "risk_bias": "low"},
+    {"region": "Canada - Toronto", "lat": 43.6532, "lon": -79.3832, "country": "Canada", "risk_bias": "low"},
+    {"region": "Australia - Sydney", "lat": -33.8688, "lon": 151.2093, "country": "Australia", "risk_bias": "low"},
+    {"region": "New Zealand - Auckland", "lat": -36.8485, "lon": 174.7633, "country": "New Zealand", "risk_bias": "low"},
+    {"region": "Chile - Santiago", "lat": -33.4489, "lon": -70.6693, "country": "Chile", "risk_bias": "low"},
+    
+    # Mixed risk regions
+    {"region": "Nigeria - Lagos", "lat": 6.5244, "lon": 3.3792, "country": "Nigeria", "risk_bias": "moderate"},
+    {"region": "Mexico - Mexico City", "lat": 19.4326, "lon": -99.1332, "country": "Mexico", "risk_bias": "moderate"},
+    {"region": "South Africa - Cape Town", "lat": -33.9249, "lon": 18.4241, "country": "South Africa", "risk_bias": "low"},
 ]
 
 
@@ -36,11 +49,6 @@ def load_aiwp_data(use_sample: bool = True) -> pd.DataFrame:
     """
     Load AIWP dataset from AWS S3 or generate sample data for demonstration.
     
-    Args:
-        use_sample: If True, generate sample data instead of loading from S3
-    
-    Returns:
-        DataFrame with climate features and region information
     """
     if use_sample:
         # Generate synthetic climate data for demonstration
@@ -48,7 +56,45 @@ def load_aiwp_data(use_sample: bool = True) -> pd.DataFrame:
         np.random.seed(42)
         
         data = []
-        for region_info in SAMPLE_REGIONS:
+        for idx, region_info in enumerate(SAMPLE_REGIONS):
+            # Set different random seed for each region for variety
+            np.random.seed(42 + idx)
+            
+            # Get risk bias to generate appropriate feature values
+            risk_bias = region_info.get("risk_bias", "moderate")
+            
+            # Generate climate features based on risk level
+            if risk_bias == "high":
+                # High risk: high precipitation, low elevation, high flood history
+                precipitation_mm = np.random.uniform(200, 400)
+                temp_anomaly_c = np.random.uniform(2, 5)
+                soil_moisture = np.random.uniform(0.6, 0.9)
+                vegetation_index = np.random.uniform(0.2, 0.5)
+                flood_history_count = np.random.randint(5, 15)
+                population_density = np.random.uniform(2000, 8000)
+                elevation_m = np.random.uniform(0, 50)
+                distance_to_water_km = np.random.uniform(0.1, 5)
+            elif risk_bias == "low":
+                # Low risk: moderate precipitation, higher elevation, low flood history
+                precipitation_mm = np.random.uniform(50, 150)
+                temp_anomaly_c = np.random.uniform(-1, 2)
+                soil_moisture = np.random.uniform(0.3, 0.6)
+                vegetation_index = np.random.uniform(0.6, 0.9)
+                flood_history_count = np.random.randint(0, 3)
+                population_density = np.random.uniform(500, 2000)
+                elevation_m = np.random.uniform(50, 500)
+                distance_to_water_km = np.random.uniform(10, 100)
+            else:  # moderate
+                # Moderate risk: balanced features
+                precipitation_mm = np.random.uniform(100, 250)
+                temp_anomaly_c = np.random.uniform(0, 3)
+                soil_moisture = np.random.uniform(0.4, 0.7)
+                vegetation_index = np.random.uniform(0.4, 0.7)
+                flood_history_count = np.random.randint(2, 7)
+                population_density = np.random.uniform(1000, 4000)
+                elevation_m = np.random.uniform(20, 200)
+                distance_to_water_km = np.random.uniform(2, 30)
+            
             # Generate synthetic climate features
             # These would come from actual AIWP satellite/sensor data
             record = {
@@ -56,15 +102,15 @@ def load_aiwp_data(use_sample: bool = True) -> pd.DataFrame:
                 "lat": region_info["lat"],
                 "lon": region_info["lon"],
                 "country": region_info["country"],
-                # Climate features (synthetic)
-                "precipitation_mm": np.random.uniform(50, 300),
-                "temp_anomaly_c": np.random.uniform(-2, 4),
-                "soil_moisture": np.random.uniform(0.1, 0.8),
-                "vegetation_index": np.random.uniform(0.2, 0.9),
-                "flood_history_count": np.random.randint(0, 10),
-                "population_density": np.random.uniform(100, 5000),
-                "elevation_m": np.random.uniform(0, 500),
-                "distance_to_water_km": np.random.uniform(0.5, 50),
+                # Climate features (synthetic, based on risk bias)
+                "precipitation_mm": precipitation_mm,
+                "temp_anomaly_c": temp_anomaly_c,
+                "soil_moisture": soil_moisture,
+                "vegetation_index": vegetation_index,
+                "flood_history_count": flood_history_count,
+                "population_density": population_density,
+                "elevation_m": elevation_m,
+                "distance_to_water_km": distance_to_water_km,
             }
             data.append(record)
         

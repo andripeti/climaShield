@@ -56,7 +56,7 @@ def create_risk_heatmap(df: pd.DataFrame, selected_region: Optional[str] = None)
         risk_score = row["predicted_risk_score"]
         lat, lon = row["lat"], row["lon"]
         
-        # Get risk category and color
+        # Get risk category and color based on risk score
         category, color = utils.get_risk_category(risk_score)
         
         # Generate summary
@@ -65,9 +65,21 @@ def create_risk_heatmap(df: pd.DataFrame, selected_region: Optional[str] = None)
         # Highlight selected region
         is_selected = (region_name == selected_region)
         
-        # Create marker with custom styling
-        icon_color = color if not is_selected else "#8e44ad"  # Purple for selected
-        radius = 15 if is_selected else 10
+        # Use risk-based colors for all markers
+        # Selected regions: purple border with risk-based fill color
+        # Non-selected regions: risk-based color for both border and fill
+        if is_selected:
+            border_color = "#8e44ad"  # Purple border for selected
+            fill_color = color  # Keep risk-based fill color
+            radius = 15
+            opacity = 0.9
+            weight = 4
+        else:
+            border_color = color  # Risk-based border
+            fill_color = color  # Risk-based fill
+            radius = 12
+            opacity = 0.7
+            weight = 2
         
         folium.CircleMarker(
             location=[lat, lon],
@@ -84,12 +96,12 @@ def create_risk_heatmap(df: pd.DataFrame, selected_region: Optional[str] = None)
                 """,
                 max_width=300
             ),
-            tooltip=f"{region_name}: {category}",
-            color=icon_color,
+            tooltip=f"{region_name}: {category} (Risk: {risk_score:.2f})",
+            color=border_color,
             fill=True,
-            fillColor=icon_color,
-            fillOpacity=0.7 if is_selected else 0.5,
-            weight=3 if is_selected else 2
+            fillColor=fill_color,
+            fillOpacity=opacity,
+            weight=weight
         ).add_to(m)
     
     # Add fullscreen button
@@ -313,6 +325,11 @@ def render_alert_system(df: pd.DataFrame):
                 with col2:
                     if st.button("📱 Simulate SMS Alert", key="alert_sms"):
                         st.success(f"✅ SMS alert sent to registered number!\n\nMessage: {alert_message}")
+                
+                # Show relocation opportunities for moderate to high risk
+                if risk_score >= 0.3:
+                    st.markdown("---")
+                    render_relocation_opportunities(st.session_state.selected_region, risk_score)
             else:
                 st.success(f"✅ {st.session_state.selected_region} is currently at acceptable risk levels.")
     else:
@@ -327,6 +344,93 @@ def render_alert_system(df: pd.DataFrame):
                 {alert['message']}
                 """)
                 st.markdown("---")
+
+
+def render_relocation_opportunities(region_name: str, risk_score: float):
+    """
+    Render relocation opportunities and assistance programs for high-risk regions.
+    
+    Args:
+        region_name: Name of the region
+        risk_score: Predicted risk score (0-1)
+    """
+    st.markdown("### 🌟 Relocation Opportunities & Assistance")
+    
+    # Get opportunities for this region
+    opportunities = utils.get_relocation_opportunities(region_name, risk_score)
+    
+    if not opportunities:
+        return
+    
+    category, color = utils.get_risk_category(risk_score)
+    
+    st.info(f"""
+    Based on the **{category}** level in {region_name}, we've identified {len(opportunities)} assistance programs 
+    that may help you relocate to safer areas or access climate adaptation resources.
+    """)
+    
+    # Display opportunities in cards
+    for i, opp in enumerate(opportunities, 1):
+        with st.expander(f"**{opp['title']}**", expanded=(i == 1)):
+            # Type badge
+            type_colors = {
+                "Relocation Grant": "#2ecc71",
+                "Economic Opportunity": "#3498db",
+                "Relocation Support": "#f39c12"
+            }
+            badge_color = type_colors.get(opp['type'], "#95a5a6")
+            
+            st.markdown(f"""
+            <div style="background-color: {badge_color}; color: white; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-bottom: 10px;">
+                {opp['type']}
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown(f"**Description:**")
+            st.write(opp['description'])
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f"**✅ Eligibility:**")
+                st.write(opp['eligibility'])
+            
+            with col2:
+                st.markdown(f"**📅 Deadline:**")
+                st.write(opp['deadline'])
+            
+            # Action button
+            if st.button(f"📝 Learn More & Apply", key=f"apply_{region_name}_{i}"):
+                st.success(f"✅ Application information sent to your registered contact!\n\nYou will receive detailed instructions for: **{opp['title']}**")
+    
+    # Additional resources
+    st.markdown("---")
+    st.markdown("### 📚 Additional Resources")
+    
+    resource_col1, resource_col2, resource_col3 = st.columns(3)
+    
+    with resource_col1:
+        st.markdown("""
+        **🌍 Global Support**
+        - UNHCR Climate Displacement Hub
+        - IOM Migration Resource Center
+        - Red Cross Emergency Aid
+        """)
+    
+    with resource_col2:
+        st.markdown("""
+        **💼 Employment Services**
+        - Climate Jobs Network
+        - Green Skills Training Portal
+        - Migrant Worker Support Line
+        """)
+    
+    with resource_col3:
+        st.markdown("""
+        **🏠 Housing Assistance**
+        - UN-Habitat Safe Shelter
+        - Local Housing Authorities
+        - Community Relocation Groups
+        """)
 
 
 def render_ai_explainability(df: pd.DataFrame, model, feature_cols: list):
